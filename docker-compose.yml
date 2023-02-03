@@ -28,7 +28,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/:/etc/nginx/conf.d/
+      - ./nginx:/etc/nginx/conf.d
       - ./app/flask/static:/usr/share/nginx/html/static
     depends_on:
       - app
