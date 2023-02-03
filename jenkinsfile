@@ -1,0 +1,85 @@
+pipeline {
+    agent any
+
+
+    environment {
+        IP = '18.135.117.62'
+        GITLAB_CREDS = 'gitlabuser'
+        ORIGIN = "http://$IP:80/gitlab-instance-094ede4f/cowversion.git"
+    }
+    stages {
+
+        // 1. Clone
+        stage('Clone SCM'){
+            steps {
+                deleteDir()
+                checkout scm
+            }
+        }
+
+        // 2. Build (Docker image)
+        stage('Build') {
+            steps{
+                sh "docker-compose build"
+                sh "docker-compose up -d"
+                sh "docker images"
+            }
+        }
+
+        // // 4. End-to-end test (docker-compose up, POST, GET, DELETE, GET, docker-compose down...) [`main` & `feature/*`]
+        // stage('E2E test'){
+        //     steps{
+
+        //     }
+        // }
+
+        // // 5. Tag [`main` only]
+        // stage('TAG'){
+        //     steps{
+
+        //     }
+        // }
+
+        // // 6. Publish [`main` only]
+        // stage('Publish') {
+        //     // when {  expression { env.BRANCH_NAME == 'master' } }
+        //     steps {
+
+        //     }
+	    // }
+
+        // // 7. Deploy [`main` only] (update image tag in production machines)
+        // stage('Deploy'){
+        //     steps{
+
+        //     }
+        // }
+
+        // stage('release publish') {
+        //     when {  expression { env.BRANCH_NAME =~ /^release\/.*/ }    }
+        //     steps {
+        //         script{
+        //             withCredentials([gitUsernamePassword(credentialsId: "${GITLAB_CREDS}", gitToolName: 'git-tool')]) {
+        //                 env.DIG=sh(returnStdout: true, script: 'git fetch --all --tags').trim()
+        //             }
+        //             env.DIG=sh(returnStdout: true, script: 'git describe --tags | tr "-" "\n" | head -1').trim()
+        //             if ("$DIG" == '' || !"$DIG".startsWith(env.BRANCH_NAME) ) { env.DIG=env.BRANCH_NAME+".0" }
+        //             env.NEW= changeLastChar("$DIG")
+                    
+        //             sh "echo $DIG"
+        //             sh "echo $NEW"
+
+        //             withMaven(maven: 'mvn', mavenSettingsConfig: 'suggest') {
+        //             sh "mvn versions:set -DnewVersion=$NEW"
+        //             sh 'mvn deploy'
+        //             withCredentials([gitUsernamePassword(credentialsId: "${GITLAB_CREDS}", gitToolName: 'git-tool')]) {
+        //                 env.DIG=sh(returnStdout: true, script: "git tag $NEW").trim()
+        //                 env.DIG=sh(returnStdout: true, script: 'git push --tags').trim()
+        //             }
+        //         }
+        //         }
+        //     }
+        // }
+     
+    }
+}
