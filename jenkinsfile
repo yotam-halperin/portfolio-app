@@ -27,6 +27,7 @@ pipeline {
         // 3. Run the architecture
         stage('Compose up'){
             steps{
+                sh "docker compose down"
                 sh "docker compose build"
                 sh "docker compose up -d"
             }
