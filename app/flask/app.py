@@ -61,8 +61,12 @@ def get_mails():
 
 @app.route("/add_mail", methods=["POST"])
 def add_mail():
-    name = request.form['name']
-    email = request.form['mail']
+    try:
+        name = request.form['name']
+        email = request.form['mail']
+    except:
+        name = request.args.get('name')
+        email = request.args.get('mail')
     time = datetime.datetime.now()
     answer = {f"name : {name}", f"email :{email}", f"time : {time}"}
     db_functions.add_mail(connection, name, email, time)
@@ -86,8 +90,8 @@ def name_of_mail(mail):
 @app.route("/delete_mail", methods=['DELETE'])
 def delete_mail():
     name = request.args.get('name')
-    answer = db_functions.delete_by_name(name)
-    return render_template("base.html", pagetitle="DELETED", data=answer), 200
+    answer = db_functions.delete_by_name(connection, name)
+    return jsonify({"DELETED":answer}), 200
 
 
 @app.route("/add_score", methods=['POST'])

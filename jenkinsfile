@@ -36,14 +36,20 @@ pipeline {
                 sh "docker compose down -v"
                 sh "docker compose build"
                 sh "docker compose up -d"
-                sh "docker ps"
             }
         }
 
         // 4. End-to-end test (docker-compose up, POST, GET, DELETE, GET, docker-compose down...) [`main` & `feature/*`]
         stage('E2E test'){
             steps{
-                sh "bash e2e.sh"
+                sh "bash e2e.sh $IP"
+            }
+        }
+
+        // Destroy architecture
+        stage('Compose down'){
+            steps{
+                sh "docker compose down -v"
             }
         }
 
