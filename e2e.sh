@@ -65,6 +65,8 @@ fi
 # check post request
 check=$(curl -X POST "http://$IP/add_mail?name=yotam&mail=yotam@yotam.yotam"  || exit 1 )
 
+echo $check
+
 answer='''
 <!DOCTYPE html>
 <html lang="en">
