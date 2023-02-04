@@ -28,7 +28,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /var/lib/docker/volumes/yotamlab_jenkins_home/_data/workspace/crossyroad_master/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - ./app/flask/static:/usr/share/nginx/html/static
     depends_on:
       - app
