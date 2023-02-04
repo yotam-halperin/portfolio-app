@@ -4,8 +4,6 @@ pipeline {
 
     environment {
         IP = '18.135.117.62'
-        GITLAB_CREDS = 'gitlabuser'
-        ORIGIN = "http://$IP:80/gitlab-instance-094ede4f/cowversion.git"
     }
     stages {
 
@@ -17,13 +15,13 @@ pipeline {
             }
         }
 
-        // #####
-        stage('Print env'){
-            steps{
-                sh 'printenv'
-            }
-        }
-        // #####
+        // // #####
+        // stage('Print env'){
+        //     steps{
+        //         sh 'printenv'
+        //     }
+        // }
+        // // #####
 
         // 2. Build (Docker image)
         stage('Build') {
@@ -35,7 +33,7 @@ pipeline {
         // 3. Run the architecture
         stage('Compose up'){
             steps{
-                sh "docker compose down"
+                sh "docker compose down -v"
                 sh "docker compose build"
                 sh "docker compose up -d"
                 sh "docker ps"
