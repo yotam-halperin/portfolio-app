@@ -17,6 +17,14 @@ pipeline {
             }
         }
 
+        // #####
+        stage('Print env'){
+            steps{
+                sh 'printenv'
+            }
+        }
+        // #####
+
         // 2. Build (Docker image)
         stage('Build') {
             steps{
