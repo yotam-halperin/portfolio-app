@@ -1,12 +1,12 @@
 pipeline {
     agent any
 
-
     environment {
+        ABSOLUTE_WORKSPACE = "/home/ubuntu/volumes/jenkins-data/workspace" 
+        JOB_WORKSPACE = "\${PWD##*/}"
         IP = '18.135.117.62'
-        GITLAB_CREDS = 'gitlabuser'
-        ORIGIN = "http://$IP:80/gitlab-instance-094ede4f/cowversion.git"
     }
+    
     stages {
 
         // 1. Clone
