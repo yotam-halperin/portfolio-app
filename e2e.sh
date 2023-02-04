@@ -2,7 +2,7 @@
 
 sleep 10
 
-check=$(curl -X GET 'http://18.135.117.62/health'  || exit 1 )
+check=$(curl -X GET 'http://localhost/health'  || exit 1 )
 
 health='''
 <!DOCTYPE html>
