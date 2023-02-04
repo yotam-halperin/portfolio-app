@@ -56,7 +56,7 @@ health='''
 </html>
 '''
 
-if [[ echo $check != echo $health ]];then
+if [[ $(echo $check) != $(echo $health) ]];then
     exit 1
 fi
 
