@@ -2,9 +2,9 @@ pipeline {
     agent any
 
 
-    environment {
-        IP = '18.135.117.62'
-    }
+    // environment {
+    //     IP = '18.135.117.62' // JENKINS_URL
+    // }
     
     stages {
 
@@ -45,7 +45,7 @@ pipeline {
                 expression {env.BRANCH_NAME =~ /^feature\/.*/} 
             }}
             steps{
-                sh "bash scripts/e2e.sh $IP"
+                sh "bash scripts/e2e.sh $JENKINS_URL"
             }
         }
 
