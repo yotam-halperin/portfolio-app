@@ -1,8 +1,9 @@
 #!/bin/bash
 
 URL=$1
-IP=$( echo $URL | tr ':' '\n' | head -1 )
+IP=$( echo $URL | tr ':' '\n' | head -2 | tr '\n' ':' )
 sleep 10
+
 
 
 # check health
