@@ -1,3 +1,13 @@
+def changeLastChar(string) {
+    def lastChar = string[string.length() - 1]
+    def newChar = lastChar.toInteger()+1
+    def newString = string.substring(0, string.length() - 1) + newChar
+
+    return newString
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
 pipeline {
     agent any
     
@@ -59,7 +69,8 @@ pipeline {
                     withCredentials([gitUsernamePassword(credentialsId: "github", gitToolName: 'git-tool')]) {
                         sh "git fetch --all --tags"
                         env.oldDIG=sh(returnStdout: true, script: 'git describe --tags || echo 1.0.0').trim()
-                        sh "echo $oldDIG"
+                        env.newDIG= changeLastChar("$oldDIG")
+                        sh "echo $newDIG"
                     }
                 }
             }
