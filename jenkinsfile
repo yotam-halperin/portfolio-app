@@ -72,22 +72,26 @@ pipeline {
                         env.newDIG= changeLastChar("$oldDIG")
                         sh "git tag $newDIG"
                         sh "git push --tags"
+                        sh "docker tag crossyroad yotamhalperin7/crossyroad:$newDIG"
                     }
                 }
             }
         }
 
-        // // 7. Publish [`main` only]
-        // stage('Publish') {
-        //     when { branch 'master' }
-        //     steps {
-        //         script{
-        //             docker.withRegistry('https://644435390668.dkr.ecr.eu-west-2.amazonaws.com', 'ecr:eu-west-2:644435390668') {
-        //                 docker.image("crossyroad:latest").push()
-        //             }
-        //         }
-        //     }
-	    // }
+        // 7. Publish [`main` only]
+        stage('Publish') {
+            when { branch 'master' }
+            steps {
+                script{
+                    withDockerRegistry([ credentialsId: "dockerhubaccount", url: "" ]) {
+                        docker.image("yotamhalperin7/crossyroad:$newDIG").push()
+                    }
+                    // docker.withRegistry('https://hub.docker.com/r/yotamhalperin7/crossyroad', 'ecr:eu-west-2:644435390668') {
+                    //     docker.image("yotamhalperin7/crossyroad:$newDIG").push()
+                    // }
+                }
+            }
+	    }
 
         // // 8. Deploy [`main` only] (update image tag in production machines)
         // stage('Deploy'){
