@@ -68,7 +68,7 @@ pipeline {
                 script{
                     withCredentials([gitUsernamePassword(credentialsId: "github", gitToolName: 'git-tool')]) {
                         sh "git fetch --all --tags"
-                        env.oldDIG=sh(returnStdout: true, script: 'git describe --tags | tr '-' '\n' | head -1 || echo 1.0.0').trim()
+                        env.oldDIG=sh(returnStdout: true, script: 'git describe --tags | tr "-" "\n" | head -1 || echo 1.0.0').trim()
                         env.newDIG= changeLastChar("$oldDIG")
                         sh "git tag $newDIG"
                         sh "git push --tags"
