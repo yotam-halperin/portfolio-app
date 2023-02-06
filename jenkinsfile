@@ -5,6 +5,7 @@ pipeline {
     environment {
         IP = '18.135.117.62'
     }
+    
     stages {
 
         // 1. Clone
@@ -15,18 +16,16 @@ pipeline {
             }
         }
 
-        // // #####
-        // stage('Print env'){
-        //     steps{
-        //         sh 'printenv'
-        //     }
-        // }
-        // // #####
+        stage('env') {
+            steps {
+                sh 'printenv'
+            }
+        }
 
         // 2. Build (Docker image)
         stage('Build') {
             steps{
-                sh "docker build -t pythonflask ./app/"
+                sh "docker build -t crossyroad ./app/"
             }
         }
 
@@ -41,34 +40,42 @@ pipeline {
 
         // 4. End-to-end test (docker-compose up, POST, GET, DELETE, GET, docker-compose down...) [`main` & `feature/*`]
         stage('E2E test'){
+            when { anyOf { 
+                branch 'master';
+                expression {env.BRANCH_NAME =~ /^feature\/.*/} 
+            }}
             steps{
-                sh "bash e2e.sh $IP"
+                sh "bash scripts/e2e.sh $IP"
             }
         }
 
-        // Destroy architecture
+        // 5. Destroy architecture
         stage('Compose down'){
             steps{
                 sh "docker compose down -v"
             }
         }
 
-        // // 5. Tag [`main` only]
+        // // 6. Tag [`main` only]
         // stage('TAG'){
         //     steps{
 
         //     }
         // }
 
-        // // 6. Publish [`main` only]
+        // // 7. Publish [`main` only]
         // stage('Publish') {
-        //     // when {  expression { env.BRANCH_NAME == 'master' } }
+        //     when { branch 'master' }
         //     steps {
-
+        //         script{
+        //             docker.withRegistry('https://644435390668.dkr.ecr.eu-west-2.amazonaws.com', 'ecr:eu-west-2:644435390668') {
+        //                 docker.image("crossyroad:latest").push()
+        //             }
+        //         }
         //     }
 	    // }
 
-        // // 7. Deploy [`main` only] (update image tag in production machines)
+        // // 8. Deploy [`main` only] (update image tag in production machines)
         // stage('Deploy'){
         //     steps{
 
