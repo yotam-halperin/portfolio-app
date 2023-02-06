@@ -1,10 +1,5 @@
 pipeline {
     agent any
-
-
-    // environment {
-    //     IP = '18.135.117.62' // JENKINS_URL
-    // }
     
     stages {
 
@@ -16,11 +11,11 @@ pipeline {
             }
         }
 
-        stage('env') {
-            steps {
-                sh 'printenv'
-            }
-        }
+        // stage('env') {
+        //     steps {
+        //         sh 'printenv'
+        //     }
+        // }
 
         // 2. Build (Docker image)
         stage('Build') {
@@ -56,12 +51,15 @@ pipeline {
             }
         }
 
-        // // 6. Tag [`main` only]
-        // stage('TAG'){
-        //     steps{
+        // 6. Tag [`main` only]
+        stage('TAG'){
+            when { branch 'master' }
+            steps{
+                sh "git fetch --all --tags"
+                sh "git describe --tags"
 
-        //     }
-        // }
+            }
+        }
 
         // // 7. Publish [`main` only]
         // stage('Publish') {
