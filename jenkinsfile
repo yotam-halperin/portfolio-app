@@ -11,6 +11,12 @@ def changeLastChar(string) {
 pipeline {
     agent any
     
+    environment {
+        GITHUB_CREDS = 'github'
+        DOCKERHUB_REPO = "yotamhalperin7/crossyroad"
+        DOCKERHUB_CREDS = "dockerhubaccount"        
+    }
+
     stages {
 
         // 1. Clone
@@ -43,7 +49,7 @@ pipeline {
             }
         }
 
-        // 4. End-to-end test (docker-compose up, POST, GET, DELETE, GET, docker-compose down...) [`main` & `feature/*`]
+        // 4. End-to-end test (docker-compose up, POST, GET, DELETE, GET, docker-compose down...) [`master` & `feature/*`]
         stage('E2E test'){
             when { anyOf { 
                 branch 'master';
@@ -61,70 +67,58 @@ pipeline {
             }
         }
 
-        // 6. Tag [`main` only]
+        // 6. Tag [`master` only]
         stage('TAG'){
             when { branch 'master' }
             steps{
                 script{
-                    withCredentials([gitUsernamePassword(credentialsId: "github", gitToolName: 'git-tool')]) {
+                    withCredentials([gitUsernamePassword(credentialsId: "$GITHUB_CREDS", gitToolName: 'git-tool')]) {
                         sh "git fetch --all --tags"
                         env.oldDIG=sh(returnStdout: true, script: 'git describe --tags | tr "-" "\n" | head -1 || echo 1.0.0').trim()
                         env.newDIG= changeLastChar("$oldDIG")
                         sh "git tag $newDIG"
                         sh "git push --tags"
-                        sh "docker tag crossyroad yotamhalperin7/crossyroad:$newDIG"
+                        sh "docker tag crossyroad $DOCKERHUB_REPO:$newDIG"
                     }
                 }
             }
         }
 
-        // 7. Publish [`main` only]
+        // 7. Publish to DockerHub [`master` only]
         stage('Publish') {
             when { branch 'master' }
             steps {
                 script{
-                    withDockerRegistry([ credentialsId: "dockerhubaccount", url: "" ]) {
-                        docker.image("yotamhalperin7/crossyroad:$newDIG").push()
+                    withDockerRegistry([ credentialsId: "$DOCKERHUB_CREDS", url: "" ]) {
+                        docker.image("$DOCKERHUB_REPO:$newDIG").push()
                     }
-                    // docker.withRegistry('https://hub.docker.com/r/yotamhalperin7/crossyroad', 'ecr:eu-west-2:644435390668') {
-                    //     docker.image("yotamhalperin7/crossyroad:$newDIG").push()
-                    // } docker pull yotamhalperin7/crossyroad:1.0.1-1-g41335610
                 }
             }
 	    }
 
-        // // 8. Deploy [`main` only] (update image tag in production machines)
+        // // 8. Deploy [`master` only] (update image tag in production machines)
         // stage('Deploy'){
         //     steps{
 
         //     }
         // }
-
-        // stage('release publish') {
-        //     when {  expression { env.BRANCH_NAME =~ /^release\/.*/ }    }
-        //     steps {
-        //         script{
-        //             withCredentials([gitUsernamePassword(credentialsId: "${GITLAB_CREDS}", gitToolName: 'git-tool')]) {
-        //                 env.DIG=sh(returnStdout: true, script: 'git fetch --all --tags').trim()
-        //             }
-        //             env.DIG=sh(returnStdout: true, script: 'git describe --tags | tr "-" "\n" | head -1').trim()
-        //             if ("$DIG" == '' || !"$DIG".startsWith(env.BRANCH_NAME) ) { env.DIG=env.BRANCH_NAME+".0" }
-        //             env.NEW= changeLastChar("$DIG")
-                    
-        //             sh "echo $DIG"
-        //             sh "echo $NEW"
-
-        //             withMaven(maven: 'mvn', mavenSettingsConfig: 'suggest') {
-        //             sh "mvn versions:set -DnewVersion=$NEW"
-        //             sh 'mvn deploy'
-        //             withCredentials([gitUsernamePassword(credentialsId: "${GITLAB_CREDS}", gitToolName: 'git-tool')]) {
-        //                 env.DIG=sh(returnStdout: true, script: "git tag $NEW").trim()
-        //                 env.DIG=sh(returnStdout: true, script: 'git push --tags').trim()
-        //             }
-        //         }
-        //         }
-        //     }
-        // }
      
+    }
+
+    post {
+        failure {  
+                mail bcc: '',
+                            body: """<b>Failure</b>
+                                <br>Project: ${env.JOB_NAME} 
+                                <br>Build Number: ${env.BUILD_NUMBER} 
+                                <br> URL de build: ${env.BUILD_URL}""",
+                            cc: '',
+                            charset: 'UTF-8',
+                            from: '',
+                            mimeType: 'text/html',
+                            replyTo: '', 
+                            subject: "ERROR CI: Project name -> ${env.JOB_NAME}",
+                            to: sh(returnStdout: true, script: 'git log --format="%ae" | head -1').trim();  
+        } 
     }
 }
