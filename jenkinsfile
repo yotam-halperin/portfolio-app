@@ -70,7 +70,8 @@ pipeline {
                         sh "git fetch --all --tags"
                         env.oldDIG=sh(returnStdout: true, script: 'git describe --tags || echo 1.0.0').trim()
                         env.newDIG= changeLastChar("$oldDIG")
-                        sh "echo $newDIG"
+                        sh "git tag $newDIG"
+                        sh "git push --tags"
                     }
                 }
             }
