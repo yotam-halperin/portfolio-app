@@ -14,7 +14,8 @@ pipeline {
     environment {
         GITHUB_CREDS = 'github'
         DOCKERHUB_REPO = "yotamhalperin7/crossyroad"
-        DOCKERHUB_CREDS = "dockerhubaccount"        
+        DOCKERHUB_CREDS = "dockerhubaccount" 
+        YH_MYSQL_PASSWORD = "pass"
     }
 
     stages {
@@ -26,12 +27,6 @@ pipeline {
                 checkout scm
             }
         }
-
-        // stage('env') {
-        //     steps {
-        //         sh 'printenv'
-        //     }
-        // }
 
         // 2. Build (Docker image)
         stage('Build') {

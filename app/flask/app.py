@@ -11,7 +11,7 @@ app = Flask(__name__)
 db_host = "mysql"
 db_port = "3306"
 db_user = "root"
-db_password = "password"
+db_password = os.environ['YH_MYSQL_PASSWORD']
 db_name = "mydb"
 
 

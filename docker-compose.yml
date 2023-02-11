@@ -3,8 +3,9 @@ version: '3.3'
 
 services:
   app:
-    build: ./app/ # when run localy
-    # image: pythonflask:latest # when run in jenkins
+    build: ./app/
+    environment:
+      - YH_MYSQL_PASSWORD=${YH_MYSQL_PASSWORD}
     depends_on:
       mysql:
         condition: service_healthy  
@@ -13,12 +14,12 @@ services:
       build: ./mysql/
       restart: always
       environment:
-        MYSQL_ROOT_PASSWORD: password
+        MYSQL_ROOT_PASSWORD: ${YH_MYSQL_PASSWORD}
       volumes:
         - mysql-data:/var/lib/mysql/
         
       healthcheck: 
-        test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', "-uroot", "-ppassword"]
+        test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', "-uroot", "-p${YH_MYSQL_PASSWORD}"]
         timeout: 7s
         retries: 15
         start_period: 30s
