@@ -16,6 +16,7 @@ pipeline {
         DOCKERHUB_REPO = "yotamhalperin7/crossyroad"
         DOCKERHUB_CREDS = "dockerhubaccount" 
         YH_MYSQL_PASSWORD = "pass"
+        YH_MYSQL_HOST = "mysql"
     }
 
 // CHECK ABOUT IT!!!!!!!

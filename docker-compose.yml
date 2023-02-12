@@ -6,6 +6,7 @@ services:
     build: ./app/
     environment:
       - YH_MYSQL_PASSWORD=${YH_MYSQL_PASSWORD}
+      - YH_MYSQL_HOST=${YH_MYSQL_HOST}
     depends_on:
       mysql:
         condition: service_healthy  

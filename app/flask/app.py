@@ -8,7 +8,7 @@ import db_functions
 app = Flask(__name__)
 
 ### database configurations
-db_host = "mysql"
+db_host = os.environ['YH_MYSQL_HOST']
 db_port = "3306"
 db_user = "root"
 db_password = os.environ['YH_MYSQL_PASSWORD']
