@@ -13,7 +13,8 @@ pipeline {
     
     environment {
         GITHUB_CREDS = 'github'
-        DOCKERHUB_REPO = "yotamhalperin7/crossyroad"
+        DOCKERHUB_BACKEND_REPO = "yotamhalperin7/crossyroad"
+        DOCKERHUB_FRONTEND_REPO = "yotamhalperin7/crossy-frontend"
         DOCKERHUB_CREDS = "dockerhubaccount" 
         YH_MYSQL_PASSWORD = "pass"
         YH_MYSQL_HOST = "mysql"
@@ -43,7 +44,7 @@ pipeline {
         // 2. Build (Docker image)
         stage('Build') {
             steps{
-                sh "docker build -t crossyroad ./app/"
+                sh "docker build -t crossy-backend ./app/"
                 sh "docker build -t crossy-frontend ./nginx/"
             }
         }
@@ -86,8 +87,8 @@ pipeline {
                         env.newDIG= changeLastChar("$oldDIG")
                         sh "git tag $newDIG"
                         sh "git push --tags"
-                        sh "docker tag crossyroad $DOCKERHUB_REPO:$newDIG"
-                        sh "docker tag crossy-frontend crossy-frontend:$newDIG"
+                        sh "docker tag crossy-backend $DOCKERHUB_BACKEND_REPO:$newDIG"
+                        sh "docker tag crossy-frontend $DOCKERHUB_FRONTEND_REPO:$newDIG"
                     }
                 }
             }
@@ -99,8 +100,8 @@ pipeline {
             steps {
                 script{
                     withDockerRegistry([ credentialsId: "$DOCKERHUB_CREDS", url: "" ]) {
-                        docker.image("$DOCKERHUB_REPO:$newDIG").push()
-                        docker.image("crossy-frontend:$newDIG").push()
+                        docker.image("$DOCKERHUB_BACKEND_REPO:$newDIG").push()
+                        docker.image("$DOCKERHUB_FRONTEND_REPO:$newDIG").push()
                     }
                 }
             }
