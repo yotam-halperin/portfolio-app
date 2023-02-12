@@ -18,6 +18,17 @@ pipeline {
         YH_MYSQL_PASSWORD = "pass"
     }
 
+// CHECK ABOUT IT!!!!!!!
+    options {
+        timestamps()
+        timeout(time:15, unit:'MINUTES')
+        buildDiscarder(logRotator(
+            numToKeepStr: '5',
+            daysToKeepStr: '7',
+            artifactNumToKeepStr:'30'
+        ))
+    }
+
     stages {
 
         // 1. Clone
