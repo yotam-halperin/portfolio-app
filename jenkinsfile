@@ -44,6 +44,7 @@ pipeline {
         stage('Build') {
             steps{
                 sh "docker build -t crossyroad ./app/"
+                sh "docker build -t crossy-frontend ./nginx/"
             }
         }
 
@@ -86,6 +87,7 @@ pipeline {
                         sh "git tag $newDIG"
                         sh "git push --tags"
                         sh "docker tag crossyroad $DOCKERHUB_REPO:$newDIG"
+                        sh "docker tag crossy-frontend crossy-frontend:$newDIG"
                     }
                 }
             }
@@ -98,6 +100,7 @@ pipeline {
                 script{
                     withDockerRegistry([ credentialsId: "$DOCKERHUB_CREDS", url: "" ]) {
                         docker.image("$DOCKERHUB_REPO:$newDIG").push()
+                        docker.image("crossy-frontend:$newDIG").push()
                     }
                 }
             }
