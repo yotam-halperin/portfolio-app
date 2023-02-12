@@ -13,7 +13,7 @@ pipeline {
     
     environment {
         GITHUB_CREDS = 'github'
-        DOCKERHUB_BACKEND_REPO = "yotamhalperin7/crossyroad"
+        DOCKERHUB_BACKEND_REPO = "yotamhalperin7/crossy-backend"
         DOCKERHUB_FRONTEND_REPO = "yotamhalperin7/crossy-frontend"
         DOCKERHUB_CREDS = "dockerhubaccount" 
         YH_MYSQL_PASSWORD = "pass"
