@@ -14,7 +14,7 @@ from tkinter import *
 pygame.init()
 
 # the domain you want the application to publish your score
-yotam_domain = "yotam.zapto.org"
+yotam_domain = "yotam.store"
 
 # images per level for the enemies
 image_trucks = [['truck1.png','truck2.png','truck3.png','truck4.png','truck5.png'],

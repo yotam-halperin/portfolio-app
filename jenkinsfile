@@ -20,7 +20,6 @@ pipeline {
         YH_MYSQL_HOST = "mysql"
     }
 
-// CHECK ABOUT IT!!!!!!!
     options {
         timestamps()
         timeout(time:15, unit:'MINUTES')
