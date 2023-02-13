@@ -90,7 +90,7 @@ def add_score(connection, user, score):
 
 def get_scores(connection):
     cursor = connection.cursor()
-    sql = "SELECT user,score FROM Scores ORDER BY score DESC;"
+    sql = "SELECT TOP(5) score, user FROM Scores ORDER BY score DESC;"
     cursor.execute(sql)
     result = cursor.fetchall()
     cursor.close()
