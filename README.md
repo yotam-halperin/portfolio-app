@@ -5,6 +5,14 @@
 ### And you can view the leaderboard of all the other players that has played in 
 ### this game before...  
 
+##### to create executable of the crossyroad application type the following command in the crossyroad folder 
+pyinstaller crossy_main.py -w --onefile
+
+- pull crossy_road executable from 'dist' folder to 'crossy_road' folder
+- delete 'dist' 'build' folders and 'crossy_main.spec' file
+- zip 'crossy_main' folder with "zip -r crossy_main.zip crossy_main/"  
+- put the ziped file in 'flask' directory
+
 
 ##### to run localy:
 
