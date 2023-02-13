@@ -297,7 +297,7 @@ def curl_to_host():
     username = f2_text.get()
     print(IP, username, score)
     try:
-        os.popen(f"curl -X POST 'http://{IP}/add_score?user={username}&score={score}'")
+        os.popen(f"curl -X POST 'https://{IP}/add_score?user={username}&score={score}' -k")
     except:
         pass
     first_window.destroy()
