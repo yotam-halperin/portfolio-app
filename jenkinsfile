@@ -116,9 +116,13 @@ pipeline {
                         dir('portfolio-charts') {
                             sh "pwd"
                             sh "sed 's/tag: *.*.*/tag: $newDIG/g' application/values.yaml > ./application/newvalues.yaml"
-                            sh "cat application/values.yaml"
                             sh "rm application/values.yaml"
                             sh "mv application/newvalues.yaml application/values.yaml"
+                            sh "cat application/values.yaml"
+                            env.EMAIL=sh(returnStdout: true, script: 'git log --format="%ae" | head -1').trim()
+                            sh "echo $EMAIL"
+                            sh "git config --global user.email '$EMAIL'"
+                            sh "git config --global user.name 'Jenkins'"
                             sh "git add application/values.yaml"
                             sh "git commit -m 'changed image tag to $newDIG'"
                             // sh "git push origin master"
