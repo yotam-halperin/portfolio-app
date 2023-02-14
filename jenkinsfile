@@ -111,7 +111,7 @@ pipeline {
             when { branch 'master' }
             steps{
                 script{
-                    dir('scripts') {
+                    dir('portfolio-charts') {
                         withCredentials([gitUsernamePassword(credentialsId: "$GITHUB_CREDS", gitToolName: 'git-tool')]) {
                         sh "git clone $DEPLOY_REPO"
                         sh "ls"
