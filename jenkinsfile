@@ -111,9 +111,9 @@ pipeline {
             when { branch 'master' }
             steps{
                 script{
-                    withCredentials([gitUsernamePassword(credentialsId: "$GITHUB_CREDS", gitToolName: 'git-tool')]) {
+                    dir('scripts') {
+                        withCredentials([gitUsernamePassword(credentialsId: "$GITHUB_CREDS", gitToolName: 'git-tool')]) {
                         sh "git clone $DEPLOY_REPO"
-                        sh "cd portfolio-charts/"
                         sh "ls"
                         sh "sed 's/tag: *.*.*/tag: $newDIG/g' application/values.yaml > ./application/newvalues.yaml"
                         sh "cat application/values.yaml"
@@ -123,6 +123,8 @@ pipeline {
                         sh "git commit -m 'changed image tag to $newDIG'"
                         // sh "git push origin master"
                     }
+                    }
+                    
                 }
             }
         }
