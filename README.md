@@ -16,8 +16,14 @@ pyinstaller crossy_main.py -w --onefile
 
 ##### to run localy:
 
-docker compose build
-docker compose up
+clean the enviroment:
+- docker compose down -v
+
+build the images:
+- docker compose build
+
+start the application:
+- docker compose up
 
 - you can now visit 'localhost:80' on your browser to view the flask application.
 - to download the game- navigate to the 'download' section and press the download button
@@ -25,29 +31,22 @@ docker compose up
 ##### to start CI with Jenkins multibranch pipeline:
 
 ##### change the enviroment variables in the jenkinsfile
-- GITHUB_CREDS      -> name of the jenkins credentials ID to authenticate with github
-- DOCKERHUB_REPO    -> name of the DockerHub repo that the artifact is pushed to
-- DOCKERHUB_CREDS   -> name of the jenkins credentials ID to authenticate with dockerhub 
+- GITHUB_CREDS              -> name of the jenkins credentials ID to authenticate with github
+- DOCKERHUB_BACKEND_REPO    -> name of the DockerHub repo that the backend (application) artifact is pushed to
+- DOCKERHUB_FRONTEND_REPO   -> name of the DockerHub repo that the frontend (static files) artifact is pushed to
+- DOCKERHUB_CREDS           -> name of the jenkins credentials ID to authenticate with dockerhub 
+- YH_MYSQL_PASSWORD         -> name of the data base password - *in plain text, only for CI porpuses
+- YH_MYSQL_HOST             -> name of the mysql service
+
 
 ##### to add Jenkins Gloabal Credentials
 - Go to Manage Jenkins > Manage Credentials > System > Global credentials (unrestricted) > Add Credentials
 
-- To set the jenkins server: OPTION 1 ( using docker compose && Dockerfile )
+- To set the jenkins server
+- the jenkins Dockerfile looks like this:
 
-<!-- version: '3'
-
-services:
-  jenkins:
-    build: ./jenkins/
-    ports:
-      - "8080:8080"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock -->
-
-- the jenkins dockerfile looks like this:
-
-<!-- FROM jenkins/jenkins:lts-jdk11
+<!-- 
+FROM jenkins/jenkins:lts-jdk11
 USER root
 RUN apt-get update && apt-get install -y lsb-release
 RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
@@ -64,15 +63,13 @@ RUN groupadd docker && usermod -aG docker jenkins && newgrp docker
 RUN apt-get update
 RUN apt-get install docker-compose-plugin
 
-USER jenkins -->
+USER jenkins 
+-->
 
+docker build -t jenkinsserver .
 
+docker run -p 8080:8080 --name jenkins -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -dit jenkinsserver bash
 
-- To set the jenkins server: OPTION 2 ( using imperative commands )
-
-docker run -p 8080:8080 --name jenkins -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -dit jenkins/jenkins:lts-jdk11 bash
-
-install docker on the server
-install docker-compose on the server
+- visit localhost:8080
 
 
