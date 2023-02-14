@@ -13,11 +13,11 @@ pipeline {
     
     environment {
         GITHUB_CREDS = 'github'
-        DOCKERHUB_BACKEND_REPO = "yotamhalperin7/crossy-backend"
-        DOCKERHUB_FRONTEND_REPO = "yotamhalperin7/crossy-frontend"
-        DOCKERHUB_CREDS = "dockerhubaccount" 
+        ECR_BACKEND_REPO = "644435390668.dkr.ecr.eu-west-2.amazonaws.com/crossyroad-backend"
+        ECR_FRONTEND_REPO = "644435390668.dkr.ecr.eu-west-2.amazonaws.com/crossyroad-frontend"
         YH_MYSQL_PASSWORD = "pass"
         YH_MYSQL_HOST = "mysql"
+        DEPLOY_REPO = "https://github.com/yotam-halperin/portfolio-charts.git"
     }
 
     options {
@@ -86,32 +86,44 @@ pipeline {
                         env.newDIG= changeLastChar("$oldDIG")
                         sh "git tag $newDIG"
                         sh "git push --tags"
-                        sh "docker tag crossy-backend $DOCKERHUB_BACKEND_REPO:$newDIG"
-                        sh "docker tag crossy-frontend $DOCKERHUB_FRONTEND_REPO:$newDIG"
+                        sh "docker tag crossy-backend $ECR_BACKEND_REPO:$newDIG"
+                        sh "docker tag crossy-frontend $ECR_FRONTEND_REPO:$newDIG"
                     }
                 }
             }
         }
 
-        // 7. Publish to DockerHub [`master` only]
+        // 7. Publish to ECR [`master` only]
         stage('Publish') {
             when { branch 'master' }
             steps {
                 script{
-                    withDockerRegistry([ credentialsId: "$DOCKERHUB_CREDS", url: "" ]) {
-                        docker.image("$DOCKERHUB_BACKEND_REPO:$newDIG").push()
-                        docker.image("$DOCKERHUB_FRONTEND_REPO:$newDIG").push()
+                    docker.withRegistry('https://644435390668.dkr.ecr.eu-west-2.amazonaws.com', 'ecr:eu-west-2:644435390668') {
+                        docker.image("$ECR_BACKEND_REPO:$newDIG").push()
+                        docker.image("$ECR_FRONTEND_REPO:$newDIG").push()
                     }
                 }
             }
 	    }
 
-        // // 8. Deploy [`master` only] (update image tag in production machines)
-        // stage('Deploy'){
-        //     steps{
-
-        //     }
-        // }
+        // 8. Deploy [`master` only]
+        stage('Deploy'){
+            when { branch 'master' }
+            steps{
+                script{
+                    withCredentials([gitUsernamePassword(credentialsId: "$GITHUB_CREDS", gitToolName: 'git-tool')]) {
+                        sh "git clone $DEPLOY_REPO"
+                        sh "cd portfolio-charts/"
+                        sh "sed 's/tag: *.*.*/tag: $newDIG/g' application/values.yaml > application/newvalues.yaml"
+                        sh "rm application/values.yaml"
+                        sh "mv application/newvalues.yaml application/values.yaml"
+                        sh "git add application/values.yaml"
+                        sh "git commit -m 'changed image tag to $newDIG'"
+                        sh "git push origin master"
+                    }
+                }
+            }
+        }
      
     }
 
