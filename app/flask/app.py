@@ -3,9 +3,18 @@ import os
 import datetime
 import db_functions
 from werkzeug.exceptions import HTTPException
+import datetime, logging, sys, json_logging
 
 #create flask
 app = Flask(__name__)
+
+json_logging.init_flask(enable_json=True)
+json_logging.init_request_instrument(app)
+
+# init the logger as usual
+logger = logging.getLogger("test-logger")
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 ### database configurations
 db_host = os.environ['YH_MYSQL_HOST']
