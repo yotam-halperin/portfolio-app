@@ -22,16 +22,27 @@
             <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
                     <div class="text-center">
                         <h1 class="mx-auto my-0 text-uppercase">{{ pagetitle }}</h1>
-                            {% for dat in data %}
+                                        
+                    </div>
+            </div>
+        </header>
+        <section class="about-section text-center" id="download">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-8">
+                        {% for dat in data %}
                                 <h4 class="text-white-50 mx-auto mt-2 mb-5"> {{dat}} </h4>
                             {% endfor %}
                         <form class="form-signup" action="/" method="GET">
                             <div class="col-auto"><button class="btn btn-primary" id="submitButton" type="submit">Return</button></div>
-                        </form>                    
+                        </form>        
+                        <br>
+                        <br>
                     </div>
+                </div>
+                <img class="img-fluid" src="{{url_for('static', filename='assets/img/ipad.png')}}" width="165" alt="..." />
             </div>
-        </header>
-
+        </section>
 
 
 
