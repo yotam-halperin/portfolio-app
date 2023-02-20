@@ -33,10 +33,10 @@ connection = db_functions.create_db_connection(f"{db_host}", f"{db_port}", f"{db
 def home_page():
     return render_template("index.html")
 
-# @app.errorhandler(HTTPException)
-# def handle_exception(e):
-#     answer ={"ERROR : Page was not found"}
-#     return render_template("base.html", pagetitle="404", data=answer), 404
+@app.errorhandler(HTTPException)
+def handle_exception(e):
+    answer ={"ERROR : Page was not found"}
+    return render_template("base.html", pagetitle="404", data=answer), 404
 
 
 # health check of both the flask and the database
