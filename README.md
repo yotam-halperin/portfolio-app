@@ -16,8 +16,8 @@ pyinstaller crossy_main.py -w --onefile
 
 ##### to run localy:
 1. define required enviroment variables:
-export YH_MYSQL_PASSWORD   = root
-export YH_MYSQL_HOST       = mysql
+- export YH_MYSQL_PASSWORD   = root
+- export YH_MYSQL_HOST       = mysql
 
 2. clean the enviroment:
 - docker compose down -v
