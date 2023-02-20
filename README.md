@@ -15,14 +15,17 @@ pyinstaller crossy_main.py -w --onefile
 
 
 ##### to run localy:
+1. define required enviroment variables:
+export YH_MYSQL_PASSWORD   = root
+export YH_MYSQL_HOST       = mysql
 
-clean the enviroment:
+2. clean the enviroment:
 - docker compose down -v
 
-build the images:
+3. build the images:
 - docker compose build
 
-start the application:
+4. start the application:
 - docker compose up
 
 - you can now visit 'localhost:80' on your browser to view the flask application.
@@ -43,9 +46,10 @@ start the application:
 - Go to Manage Jenkins > Manage Credentials > System > Global credentials (unrestricted) > Add Credentials
 
 - To set the jenkins server
-- the jenkins Dockerfile looks like this:
-
+- build docker image from jenkins base image jenkins/jenkins:lts-jdk11 and install docker and docker compose on it.
 <!-- 
+the jenkins Dockerfile looks like this:
+
 FROM jenkins/jenkins:lts-jdk11
 USER root
 RUN apt-get update && apt-get install -y lsb-release
