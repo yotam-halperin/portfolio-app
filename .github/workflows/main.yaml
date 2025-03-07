@@ -5,9 +5,9 @@ on:
   push:
   # workflow_dispatch:
 
-env:
-  # S3_BUCKET: ghostapp-lambda-code
-  # SLACK_CHANNEL: ghostapp-github-actions
+# env:
+#   S3_BUCKET: ghostapp-lambda-code
+#   SLACK_CHANNEL: ghostapp-github-actions
 
 jobs:
   scm_checkout:
