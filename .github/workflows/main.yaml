@@ -1,0 +1,109 @@
+
+name: New Crossyroad Version
+
+on:
+  push:
+  # workflow_dispatch:
+
+env:
+  # S3_BUCKET: ghostapp-lambda-code
+  # SLACK_CHANNEL: ghostapp-github-actions
+
+jobs:
+  scm_checkout:
+    runs-on: self-hosted
+    steps:
+    - name: checkout source code
+      uses: actions/checkout@v4
+
+    - uses: docker-practice/actions-setup-docker@master
+      timeout-minutes: 12
+    - run: |
+        docker version
+        docker run --rm hello-world  
+
+
+
+
+
+      
+  #     - name: get changed folders
+  #       uses: Stockopedia/action-get-changed-files@v1
+  #       id: get_changed_folders
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         ignore: ".github"
+  #         foldersOnly: true # to only include folders in the output
+  #         format: json # either json, csv or newline
+  #   outputs:
+  #     Folders: ${{ steps.get_changed_folders.outputs.changed }}
+
+
+  # test_lambdas:
+  #   needs: get_changed_sam
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       Folders: ${{ fromJSON(needs.get_changed_sam.outputs.Folders) }}
+    
+  #   steps:
+  #     - name: checkout source code
+  #       uses: actions/checkout@v4
+      
+  #     - name: setup sam
+  #       uses: aws-actions/setup-sam@v2
+  #       with:
+  #         use-installer: true
+
+  #     - name: build testing environment
+  #       run: |
+  #         cd ${{ matrix.Folders }}
+  #         sam build
+  #         sam local start-api &
+  #         sleep 25
+  #         bash tests.sh
+  #         cd ..
+
+  # update_lambdas:
+  #   needs: [get_changed_sam, test_lambdas]
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       Folders: ${{ fromJSON(needs.get_changed_sam.outputs.Folders) }}
+
+  #   steps:
+  #     - name: checkout source code
+  #       uses: actions/checkout@v4
+
+  #     - name: setup dotnet6
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: '6.0.x'
+  #     - run: dotnet tool install -g Amazon.Lambda.Tools
+      
+  #     - name: Configure AWS Credentials
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ${{ secrets.AWS_REGION }}
+      
+  #     - name: deploy function
+  #       run: |
+  #         cd ${{ matrix.Folders }}/src
+  #         FUNCTIONS=($(ls))
+  #         for f in ${FUNCTIONS[@]}
+  #         do
+  #           cd $f
+  #           dotnet lambda deploy-function
+  #           dotnet lambda package
+  #           aws s3 cp $(pwd)/bin/Release/net6.0/$f.zip s3://$S3_BUCKET/$f/
+  #           cd ..
+  #         done
+      
+  #     - name: slack notification
+  #       uses: ./.github/actions/slack
+  #       with:
+  #         slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+  #         result: ${{ job.status }}
+  #         channel: $SLACK_CHANNEL
