@@ -15,6 +15,9 @@ jobs:
     steps:
     - name: checkout source code
       uses: actions/checkout@v4
+    - run: |
+        sudo groupadd docker
+        sudo usermod -aG docker $USER
 
     - name: Set up Docker
       uses: docker/setup-docker-action@v4
