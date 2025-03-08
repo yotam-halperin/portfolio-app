@@ -5,10 +5,9 @@ on:
   push:
   # workflow_dispatch:
 
-env:
-  YOTPASS: "${{ env.YOTPASS }}"
-  # ECR_BACKEND_REPO: ${{ env.ECR_BACKEND_REPO }}
-  # ECR_FRONTEND_REPO: ${{ env.ECR_FRONTEND_REPO }}
+# env:
+#   ECR_BACKEND_REPO: ${{ env.ECR_BACKEND_REPO }}
+#   ECR_FRONTEND_REPO: ${{ env.ECR_FRONTEND_REPO }}
 
 jobs:
   scm_checkout:
