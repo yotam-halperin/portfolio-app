@@ -37,7 +37,7 @@ jobs:
         docker compose up -d
     
     - name: E2E
-      if: github.ref == 'refs/heads/master' || 'github.ref == 'refs/heads/feature*'
+      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/feature')
       run: |
         bash scripts/e2e.sh localhost 
         # $JENKINS_URL 
