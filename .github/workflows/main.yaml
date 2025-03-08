@@ -5,9 +5,10 @@ on:
   push:
   # workflow_dispatch:
 
-# env:
-#   S3_BUCKET: ghostapp-lambda-code
-#   SLACK_CHANNEL: ghostapp-github-actions
+env:
+  YOTPASS: ${{ env.YOTPASS }}
+  # ECR_BACKEND_REPO: ${{ env.ECR_BACKEND_REPO }}
+  # ECR_FRONTEND_REPO: ${{ env.ECR_FRONTEND_REPO }}
 
 jobs:
   scm_checkout:
@@ -15,18 +16,104 @@ jobs:
     steps:
     - name: checkout source code
       uses: actions/checkout@v4
-
-    - name: Set up Docker
-      uses: docker/setup-docker-action@v4
-    - run: |
+    - name: check versions
+      run: |
         docker version
-        docker run --rm hello-world  
+        aws --version
+        echo -e "$YOTPASS"
+  
+  testing:
+    needs: [scm_checkout]
+    runs-on: self-hosted
+    steps:
+    - name: build images
+      run: |
+        docker build -t crossy-backend ./app/
+        docker build -t crossy-frontend ./nginx/
+
+    - name: build test environment
+      run: |
+        docker compose down -v
+        docker compose build
+        docker compose up -d
+    
+    - name: E2E
+      if: github.ref == 'refs/heads/master' || 'github.ref == 'refs/heads/feature*'
+      run: |
+        bash scripts/e2e.sh localhost 
+        # $JENKINS_URL 
+    
+    - name: destroy test environment
+      run: |
+        docker compose down -v
+
+  publish:
+    needs: [testing]
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/master'
+    steps:
+    - name: tagging
+      run: |
+        git fetch --all --tags
+        oldDIG=sh(returnStdout: true, script: 'git describe --tags | tr "-" "\n" | head -1 || echo 1.0.0').trim()
+        newDIG=sh(returnStdout: true, script: "bash scripts/changeLastChar.sh $oldDIG").trim()
+        git tag $newDIG
+        git push --tags
+        docker tag crossy-backend $ECR_BACKEND_REPO:$newDIG
+        docker tag crossy-frontend $ECR_FRONTEND_REPO:$newDIG
+
+  #   - name: publishing
+  #     run: |
+  #       docker.image("$ECR_BACKEND_REPO:$newDIG").push()
+  #       docker.image("$ECR_FRONTEND_REPO:$newDIG").push()
+  
+  # deploy:
+  #   needs: [publish]
+  #   runs-on: self-hosted
+  #   if: github.ref == 'refs/heads/master'
+  #   steps:
+  #   - name: deployment
+  #     run: |
+  #       git fetch --all --tags
+  #       oldDIG=sh(returnStdout: true, script: 'git describe --tags | tr "-" "\n" | head -1 || echo 1.0.0').trim()
+  #       newDIG=sh(returnStdout: true, script: "bash scripts/changeLastChar.sh $oldDIG").trim()
+  #       git tag $newDIG
+  #       git push --tags
+  #       docker tag crossy-backend $ECR_BACKEND_REPO:$newDIG
+  #       docker tag crossy-frontend $ECR_FRONTEND_REPO:$newDIG
+
+  #   - name: publishing
+  #     run: |
+  #       docker.image("$ECR_BACKEND_REPO:$newDIG").push()
+  #       docker.image("$ECR_FRONTEND_REPO:$newDIG").push()
+  
+
+
+# stage('Deploy'){
+#   when { branch 'master' }
+#   steps{
+#       script{
+#           withCredentials([gitUsernamePassword(credentialsId: "$GITHUB_CREDS", gitToolName: 'git-tool')]) {
+#               sh "git clone $DEPLOY_REPO"
+#               env.EMAIL=sh(returnStdout: true, script: 'git log --format="%ae" | head -1').trim()
+#               dir('portfolio-charts') {
+#                   sh "sed 's/tag: *.*.*/tag: $newDIG/g' application/values.yaml > ./application/newvalues.yaml"
+#                   sh "rm application/values.yaml"
+#                   sh "mv application/newvalues.yaml application/values.yaml"
+#                   sh "git config --global user.email '$EMAIL'"
+#                   sh "git config --global user.name 'Jenkins'"
+#                   sh "git add application/values.yaml"
+#                   sh "git commit -m 'changed image tag to $newDIG'"
+#                   sh "git push origin master"
+#               }
+#           }
+#       }
+#   }
+# }
 
 
 
 
-
-      
   #     - name: get changed folders
   #       uses: Stockopedia/action-get-changed-files@v1
   #       id: get_changed_folders
