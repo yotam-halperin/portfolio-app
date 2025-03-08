@@ -6,7 +6,7 @@ on:
   # workflow_dispatch:
 
 env:
-  YOTPASS: ${{ env.YOTPASS }}
+  YOTPASS: "${{ env.YOTPASS }}"
   # ECR_BACKEND_REPO: ${{ env.ECR_BACKEND_REPO }}
   # ECR_FRONTEND_REPO: ${{ env.ECR_FRONTEND_REPO }}
 
