@@ -5,9 +5,11 @@ on:
   push:
   # workflow_dispatch:
 
-# env:
-#   ECR_BACKEND_REPO: ${{ env.ECR_BACKEND_REPO }}
-#   ECR_FRONTEND_REPO: ${{ env.ECR_FRONTEND_REPO }}
+env:
+  YH_MYSQL_PASSWORD: "pass"
+  YH_MYSQL_HOST: "mysql"
+  # ECR_BACKEND_REPO: ${{ env.ECR_BACKEND_REPO }}
+  # ECR_FRONTEND_REPO: ${{ env.ECR_FRONTEND_REPO }}
 
 jobs:
   scm_checkout:
